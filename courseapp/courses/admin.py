@@ -1,10 +1,14 @@
 from django.contrib import admin
+from django.db.models import Count
+from django.template.context_processors import request
+from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 from courses.models import Category, Course, Lesson, Tag
 from django import forms
 from ckeditor_uploader.widgets \
     import CKEditorUploadingWidget
 from django.urls import path
+
 
 class LessonForm(forms.ModelForm):
     content = forms.CharField(widget=CKEditorUploadingWidget)
@@ -36,13 +40,20 @@ class MyAdminSte(admin.AdminSite):
     site_header = 'OU eCourse Online'
 
     def get_urls(self):
-        return [path('course-stats', self.course_stats),] + super().get_urls()
+        return [path('course-stats/', self.course_stats), ] + super().get_urls()
+
+    def course_stats(self, request):
+        stats = Category.objects.annotate(course_count=Count('course__id')).values('id', 'name', 'course_count')
+        return TemplateResponse(request, 'admin/stats.html', {
+            'stats': stats
+        })
+
 
 admin_site = MyAdminSte(name='eCourse')
 
-admin.site.register(Category)
-admin.site.register(Course)
-admin.site.register(Lesson, MyLessonAdmin)
-admin.site.register(Tag)
+admin_site.register(Category)
+admin_site.register(Course)
+admin_site.register(Lesson, MyLessonAdmin)
+admin_site.register(Tag)
 
 # Register your models here.
