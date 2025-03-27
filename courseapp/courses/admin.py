@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.template.context_processors import request
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
-from courses.models import Category, Course, Lesson, Tag
+from courses.models import Category, Course, Lesson, Tag, Comment
 from django import forms
 from ckeditor_uploader.widgets \
     import CKEditorUploadingWidget
@@ -53,6 +53,7 @@ admin_site = MyAdminSte(name='eCourse')
 
 admin_site.register(Category)
 admin_site.register(Course)
+admin_site.register(Comment)
 admin_site.register(Lesson, MyLessonAdmin)
 admin_site.register(Tag)
 
